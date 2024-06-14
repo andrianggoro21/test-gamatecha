@@ -35,9 +35,11 @@ export const fetchUsers = async () => {
 };
 
 // Fungsi untuk mengambil daftar artikel
-export const fetchArticles = async () => {
+export const fetchArticles = async (page = 1, limit = 10) => {
   try {
-    const response = await api.get("/api/articles");
+    const response = await api.get(`/api/articles`, {
+      params: { page, limit },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching articles:", error);

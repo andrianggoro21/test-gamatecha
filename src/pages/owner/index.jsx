@@ -8,13 +8,18 @@ const OwnerDashboard = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [articles, setArticles] = useState([]);
-  const [profile, setProfile] = useState(null); // State untuk menyimpan data profil pengguna
-  const [activeTab, setActiveTab] = useState('articles'); // Default to 'articles'
+  const [profile, setProfile] = useState(null);
+  const [activeTab, setActiveTab] = useState('articles');
 
-  const loadArticles = useCallback(async () => {
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const loadArticles = useCallback(async (page = 1) => {
     try {
-      const data = await fetchArticles();
+      const data = await fetchArticles(page, 10); 
       setArticles(data.data);
+      setTotalPages(data.totalPage);
     } catch (error) {
       console.error('Error loading articles:', error);
     }
@@ -33,7 +38,7 @@ const OwnerDashboard = () => {
     const fetchData = async () => {
       if (session) {
         if (activeTab === 'articles') {
-          await loadArticles();
+          await loadArticles(currentPage);
         } else if (activeTab === 'profile') {
           await loadUserProfile();
         }
@@ -41,7 +46,7 @@ const OwnerDashboard = () => {
     };
 
     fetchData();
-  }, [session, activeTab, loadArticles, loadUserProfile]);
+  }, [session, activeTab, currentPage, loadArticles, loadUserProfile]);
 
   useEffect(() => {
     if (!session && status !== 'loading') {
@@ -55,7 +60,13 @@ const OwnerDashboard = () => {
   }, [router]);
 
   const handleViewProfile = () => {
-    setActiveTab('profile'); // Set active tab to 'profile'
+    setActiveTab('profile');
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
   };
 
   return (
@@ -89,10 +100,29 @@ const OwnerDashboard = () => {
           </button>
         </div>
         {activeTab === 'articles' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {articles.map((article) => (
-              <CardArticle key={article.id} article={article} />
-            ))}
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {articles.map((article) => (
+                <CardArticle key={article.id} article={article} />
+              ))}
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="bg-gray-300 text-black px-4 py-2 rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span>Page {currentPage} of {totalPages}</span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="bg-gray-300 text-black px-4 py-2 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
         {activeTab === 'profile' && (
@@ -105,7 +135,6 @@ const OwnerDashboard = () => {
                 <p className="text-lg font-semibold">Username: {profile.username}</p>
                 <p className="text-lg font-semibold">Email: {profile.email}</p>
                 <p className="text-lg font-semibold">Role: {profile.role}</p>
-                {/* Add more profile details as needed */}
               </div>
             ) : (
               <p>Loading profile...</p>

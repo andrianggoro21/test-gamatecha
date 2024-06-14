@@ -2,7 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['is3.cloudhost.id'],
+    domains: [
+      "www.jogja.polri.go.id",
+      "is3.cloudhost.id",
+      "tribratanews.sulsel.polri.go.id",
+    ],
   },
 };
 

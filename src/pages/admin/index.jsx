@@ -10,7 +10,11 @@ const AdminDashboard = () => {
   const router = useRouter();
   const [users, setUsers] = useState([]);
   const [articles, setArticles] = useState([]);
-  const [activeTab, setActiveTab] = useState('users'); // Default to 'users'
+  const [activeTab, setActiveTab] = useState('users'); 
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const loadUsers = useCallback(async () => {
     try {
@@ -21,10 +25,11 @@ const AdminDashboard = () => {
     }
   }, []);
 
-  const loadArticles = useCallback(async () => {
+  const loadArticles = useCallback(async (page = 1) => {
     try {
-      const data = await fetchArticles();
-      setArticles(data.data); // Only storing the 'data' array from the articles response
+      const data = await fetchArticles(page, 10);
+      setArticles(data.data); 
+      setTotalPages(data.totalPage);
     } catch (error) {
       console.error('Error loading articles:', error);
     }
@@ -36,13 +41,13 @@ const AdminDashboard = () => {
         if (activeTab === 'users') {
           await loadUsers();
         } else if (activeTab === 'articles') {
-          await loadArticles();
+          await loadArticles(currentPage);
         }
       }
     };
 
     fetchData();
-  }, [session, loadUsers, loadArticles, activeTab]);
+  }, [session, loadUsers, loadArticles, activeTab, currentPage]);
 
   useEffect(() => {
     if (!session && status !== 'loading') {
@@ -70,6 +75,12 @@ const AdminDashboard = () => {
     },
     [activeTab, loadUsers]
   );
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   const columns = useMemo(() => {
     if (activeTab === 'users') {
@@ -162,12 +173,31 @@ const AdminDashboard = () => {
         </div>
         {activeTab === 'users' && (
           <div className="overflow-x-auto">
-            <DataTable columns={columns} data={users} />
+            <DataTable columns={columns} data={users} page={currentPage} />
           </div>
         )}
         {activeTab === 'articles' && (
           <div className="overflow-x-auto">
-            <DataTable columns={columns} data={articles} />
+            <DataTable columns={columns} data={articles} page={currentPage} />
+            <div className="flex justify-between items-center mt-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>
