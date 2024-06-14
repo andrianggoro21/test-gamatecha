@@ -1,6 +1,4 @@
-// pages/index.jsx
-
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { checkUserRole } from '@/services/auth';
@@ -16,7 +14,7 @@ const IndexPage = () => {
         await checkUserRole(session, router);
         setLoading(false);
       } else {
-        router.push('/auth/signin');
+        router.push('/auth/signin'); 
       }
     };
 
