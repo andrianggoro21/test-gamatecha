@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { fetchArticles, fetchUserProfile } from '@/services/api';
@@ -11,7 +11,6 @@ const OwnerDashboard = () => {
   const [profile, setProfile] = useState(null);
   const [activeTab, setActiveTab] = useState('articles');
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
