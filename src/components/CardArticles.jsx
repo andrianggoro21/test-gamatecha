@@ -1,5 +1,3 @@
-// components/CardArticle.jsx
-
 import React from 'react';
 import Image from 'next/image';
 
@@ -10,7 +8,7 @@ const CardArticle = ({ article }) => {
         <Image
           src={article.image}
           alt={article.title}
-          layout="fill" // Remove this line
+          layout="fill" 
           objectFit="cover"
           className="rounded-lg"
         />

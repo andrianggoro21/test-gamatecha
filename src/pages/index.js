@@ -16,16 +16,15 @@ const IndexPage = () => {
         await checkUserRole(session, router);
         setLoading(false);
       } else {
-        router.push('/auth/signin'); // Redirect to sign-in page
+        router.push('/auth/signin');
       }
     };
 
     fetchData();
   }, [session, status, router]);
 
-  if (loading || status === 'loading') return <p>Loading...</p>; // Optional loading indicator
+  if (loading || status === 'loading') return <p>Loading...</p>; 
 
-  // Optional fallback content if role-based redirection fails
   return (
     <div>
       <p>User role not found or handled.</p>

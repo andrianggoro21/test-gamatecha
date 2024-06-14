@@ -1,7 +1,6 @@
-import React from 'react';
 import { useTable } from 'react-table';
 
-const DataTable = ({ columns, data }) => {
+const DataTable = ({ columns, data, page }) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -29,7 +28,7 @@ const DataTable = ({ columns, data }) => {
           prepareRow(row);
           return (
             <tr key={row.id} {...row.getRowProps()} className="border-b border-gray-200 hover:bg-gray-100">
-              <td className="py-4 px-6 text-center">{index + 1}</td> {/* Kolom nomor urut di data */}
+              <td className="py-4 px-6 text-center">{(page - 1) * 10 + index + 1}</td> 
               {row.cells.map(cell => (
                 <td key={cell.id} {...cell.getCellProps()} className="py-4 px-6">
                   {cell.render('Cell')}
