@@ -1,10 +1,12 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to toggle show/hide password
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -20,6 +22,10 @@ export default function Login() {
     } else {
       alert("Login failed, please check your credentials");
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -38,13 +44,30 @@ export default function Login() {
         </label>
         <label>
           Password:
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 mb-2 p-2 border border-gray-300 w-full rounded"
-            required
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 mb-2 p-2 border border-gray-300 w-full rounded"
+              required
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 px-3 flex items-center"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? (
+                <AiFillEyeInvisible
+                  className="h-6 w-6 text-gray-400 cursor-pointer"
+                />
+              ) : (
+                <AiFillEye
+                  className="h-6 w-6 text-gray-400 cursor-pointer"
+                />
+              )}
+            </button>
+          </div>
         </label>
         <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">Login</button>
       </form>
